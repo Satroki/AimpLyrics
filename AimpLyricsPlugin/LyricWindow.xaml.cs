@@ -1,19 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using AIMP.SDK.Player;
+using System;
+using System.IO;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using AIMP.SDK.Player;
+using System.Windows.Media.Effects;
 using System.Windows.Threading;
-using AIMP.SDK.FileManager;
-using System.IO;
 
 namespace AimpLyricsPlugin
 {
@@ -25,18 +17,29 @@ namespace AimpLyricsPlugin
         public bool IsClosed { get; set; }
 
         private IAimpPlayer player;
+
         private DispatcherTimer timer = new DispatcherTimer();
         private string file;
         private LyricInfo lyric;
+        private Settings setting;
 
         public LyricWindow(IAimpPlayer player)
         {
             Owner = null;
             InitializeComponent();
             this.player = player;
+
             Closing += LyricWindow_Closing;
 
-            timer.Interval = TimeSpan.FromSeconds(1);
+            setting = Settings.Read();
+            Top = setting.Top;
+            Left = setting.Left;
+            t2.Foreground = setting.Color;
+            t1.FontSize = t2.FontSize = setting.Size;
+            if (t1.Effect is BlurEffect be)
+                be.Radius = setting.BlurRadius;
+
+            timer.Interval = TimeSpan.FromMilliseconds(50);
             timer.Tick += Timer_Tick;
             timer.Start();
         }
@@ -61,7 +64,6 @@ namespace AimpLyricsPlugin
                 var lrcPath = Path.Combine(dir, lrc);
                 if (File.Exists(lrcPath))
                 {
-                    Activate();
                     var str = File.ReadAllText(lrcPath);
                     lyric = new LyricInfo(str);
                 }
@@ -76,17 +78,39 @@ namespace AimpLyricsPlugin
             }
         }
 
-        private void ChangedText(string text) => label.Content = text;
+        private void ChangedText(string text)
+        {
+            t1.Text = text;
+            t2.Text = text;
+        }
 
         private void LyricWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             timer.Stop();
+            Save();
             IsClosed = true;
         }
 
-        private void label_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        public void Save()
+        {
+            setting.Top = Top;
+            setting.Left = Left;
+            setting.Save();
+        }
+
+        private void Grid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             DragMove();
+        }
+
+        private void Grid_MouseEnter(object sender, MouseEventArgs e)
+        {
+            grid.Background = new SolidColorBrush(Color.FromArgb(0xb0, 0, 0, 0));
+        }
+
+        private void Grid_MouseLeave(object sender, MouseEventArgs e)
+        {
+            grid.Background = Brushes.Transparent;
         }
     }
 }

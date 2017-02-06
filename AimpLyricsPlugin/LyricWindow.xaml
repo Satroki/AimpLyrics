@@ -8,10 +8,14 @@
         Title="歌词" WindowStyle="None" Background="Transparent" AllowsTransparency="True" Topmost="True"
         Height="50" Width="1000">
     <Grid>
-        <Label x:Name="label" Grid.Row="0" FontSize="22.5pt"
-               Content="" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" Foreground="#FFE2FFB7"
-               Height="38" Background="Transparent" Padding="5,0"
-               MouseLeftButtonDown="label_MouseLeftButtonDown">
-        </Label>
+        <Grid x:Name="grid" VerticalAlignment="Center" HorizontalAlignment="Center" Background="Transparent" MouseLeftButtonDown="Grid_MouseLeftButtonDown"
+              MouseEnter="Grid_MouseEnter" MouseLeave="Grid_MouseLeave" MinWidth="10">
+            <TextBlock x:Name="t1" FontSize="22.5pt">
+                <TextBlock.Effect>
+                    <BlurEffect Radius="8"/>
+                </TextBlock.Effect>
+            </TextBlock>
+            <TextBlock x:Name="t2" FontSize="22.5pt" Foreground="#FFE2FFB7"/>
+        </Grid>
     </Grid>
 </Window>

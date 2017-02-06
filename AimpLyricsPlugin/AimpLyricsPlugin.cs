@@ -11,6 +11,7 @@ namespace AimpLyricsPlugin
         public override void Dispose()
         {
             Player.MenuManager.Delete(menu);
+            win.Save();
             win.Close();
         }
 
