@@ -32,11 +32,11 @@ namespace AimpLyricsPlugin
             var path = GetPath();
             if (File.Exists(path))
             {
-                var line = File.ReadAllLines(FileName).Where(l => !l.StartsWith("#")).FirstOrDefault();
-                var cfgs = line?.Split(' ');
-                if (cfgs?.Length >= 5)
+                try
                 {
-                    try
+                    var line = File.ReadAllLines(path).Where(l => !l.StartsWith("#")).FirstOrDefault();
+                    var cfgs = line?.Split(' ');
+                    if (cfgs?.Length >= 5)
                     {
                         return new Settings
                         {
@@ -47,7 +47,10 @@ namespace AimpLyricsPlugin
                             BlurRadius = double.Parse(cfgs[4])
                         };
                     }
-                    catch { }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
                 }
             }
             return new Settings();

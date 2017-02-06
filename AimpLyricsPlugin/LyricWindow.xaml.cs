@@ -70,10 +70,7 @@ namespace AimpLyricsPlugin
                 else
                 {
                     lyric = null;
-                    if (!string.IsNullOrEmpty(fi.Artist))
-                        ChangedText($"{fi.Artist} - {fi.Title}");
-                    else
-                        ChangedText(fi.Title);
+                    ChangedText("");
                 }
             }
         }
