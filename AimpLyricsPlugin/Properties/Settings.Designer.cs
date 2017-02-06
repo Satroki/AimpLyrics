@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace AimpLyrics.Properties
+namespace AimpLyricsPlugin.Properties
 {
 
 
