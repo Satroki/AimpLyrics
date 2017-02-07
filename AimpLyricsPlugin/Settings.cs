@@ -1,24 +1,28 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
+using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Media;
-
 namespace AimpLyricsPlugin
 {
-    public class Settings
+    public class Settings : INotifyPropertyChanged
     {
         public double Top { get; set; } = 100;
         public double Left { get; set; } = 100;
+        public double Width { get; set; } = 1000;
         public string ColorString { get; set; } = "#FFE2FFB7";
-        public SolidColorBrush Color => ConvertColor(ColorString);
         public double Size { get; set; } = 30;
         public double BlurRadius { get; set; } = 8;
 
-        private const string FileName = "AimpLyricsPlugin.cfg";
-        private const string Commemt = "#top left color size blur_radius ";
+        [JsonIgnore]
+        public SolidColorBrush Color => ConvertColor(ColorString);
+        [JsonIgnore]
+        private const string FileName = "config.json";
 
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
         private static string GetPath()
         {
@@ -34,19 +38,8 @@ namespace AimpLyricsPlugin
             {
                 try
                 {
-                    var line = File.ReadAllLines(path).Where(l => !l.StartsWith("#")).FirstOrDefault();
-                    var cfgs = line?.Split(' ');
-                    if (cfgs?.Length >= 5)
-                    {
-                        return new Settings
-                        {
-                            Top = double.Parse(cfgs[0]),
-                            Left = double.Parse(cfgs[1]),
-                            ColorString = cfgs[2],
-                            Size = double.Parse(cfgs[3]),
-                            BlurRadius = double.Parse(cfgs[4])
-                        };
-                    }
+                    var cfg = File.ReadAllText(path);
+                    return JsonConvert.DeserializeObject<Settings>(cfg);
                 }
                 catch (Exception ex)
                 {
@@ -59,7 +52,7 @@ namespace AimpLyricsPlugin
         public void Save()
         {
             var path = GetPath();
-            var content = $"{Commemt}{Environment.NewLine}{Top} {Left} {ColorString} {Size} {BlurRadius}";
+            var content = JsonConvert.SerializeObject(this);
             File.WriteAllText(path, content);
         }
 

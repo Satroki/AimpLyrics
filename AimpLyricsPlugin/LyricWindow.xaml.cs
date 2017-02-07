@@ -32,12 +32,7 @@ namespace AimpLyricsPlugin
             Closing += LyricWindow_Closing;
 
             setting = Settings.Read();
-            Top = setting.Top;
-            Left = setting.Left;
-            t2.Foreground = setting.Color;
-            t1.FontSize = t2.FontSize = setting.Size;
-            if (t1.Effect is BlurEffect be)
-                be.Radius = setting.BlurRadius;
+            DataContext = setting;
 
             timer.Interval = TimeSpan.FromMilliseconds(50);
             timer.Tick += Timer_Tick;
@@ -90,8 +85,6 @@ namespace AimpLyricsPlugin
 
         public void Save()
         {
-            setting.Top = Top;
-            setting.Left = Left;
             setting.Save();
         }
 
@@ -108,6 +101,12 @@ namespace AimpLyricsPlugin
         private void Grid_MouseLeave(object sender, MouseEventArgs e)
         {
             grid.Background = Brushes.Transparent;
+        }
+
+        private void Setting_Click(object sender, RoutedEventArgs e)
+        {
+            var sw = new SettingWindow(setting);
+            sw.Show();
         }
     }
 }

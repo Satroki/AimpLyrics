@@ -6,16 +6,22 @@
         xmlns:local="clr-namespace:AimpLyricsPlugin"
         mc:Ignorable="d"
         Title="歌词" WindowStyle="None" Background="Transparent" AllowsTransparency="True" Topmost="True"
-        Height="50" Width="1000">
+        Top="{Binding Top,Mode=TwoWay}" Left="{Binding Left,Mode=TwoWay}"
+        Height="50" Width="{Binding Width}">
     <Grid>
         <Grid x:Name="grid" VerticalAlignment="Center" HorizontalAlignment="Center" Background="Transparent" MouseLeftButtonDown="Grid_MouseLeftButtonDown"
               MouseEnter="Grid_MouseEnter" MouseLeave="Grid_MouseLeave">
-            <TextBlock x:Name="t1" FontSize="22.5pt" Margin="5">
+            <Grid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="设置" Click="Setting_Click"/>
+                </ContextMenu>
+            </Grid.ContextMenu>
+            <TextBlock x:Name="t1" FontSize="{Binding Size}" Margin="5">
                 <TextBlock.Effect>
-                    <BlurEffect Radius="8"/>
+                    <BlurEffect Radius="{Binding BlurRadius}"/>
                 </TextBlock.Effect>
             </TextBlock>
-            <TextBlock x:Name="t2" FontSize="22.5pt" Foreground="#FFE2FFB7" Margin="5"/>
+            <TextBlock x:Name="t2" FontSize="{Binding Size}" Foreground="{Binding Color}" Margin="5"/>
         </Grid>
     </Grid>
 </Window>
