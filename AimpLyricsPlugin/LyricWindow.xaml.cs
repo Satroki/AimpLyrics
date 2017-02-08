@@ -33,10 +33,20 @@ namespace AimpLyricsPlugin
 
             setting = Settings.Read();
             DataContext = setting;
+            setting.PropertyChanged += Setting_PropertyChanged;
 
             timer.Interval = TimeSpan.FromMilliseconds(50);
             timer.Tick += Timer_Tick;
             timer.Start();
+        }
+
+        private void Setting_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(setting.BlurRadius))
+            {
+                if (t1.Effect is BlurEffect be)
+                    be.Radius = setting.BlurRadius;
+            }
         }
 
         private void Timer_Tick(object sender, EventArgs e)
@@ -105,8 +115,20 @@ namespace AimpLyricsPlugin
 
         private void Setting_Click(object sender, RoutedEventArgs e)
         {
-            var sw = new SettingWindow(setting);
-            sw.Show();
+            try
+            {
+                var sw = new SettingWindow(setting);
+                sw.Show();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void Close_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
         }
     }
 }

@@ -3,22 +3,22 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:AimpLyricsPlugin"
         mc:Ignorable="d"
         Title="歌词" WindowStyle="None" Background="Transparent" AllowsTransparency="True" Topmost="True"
         Top="{Binding Top,Mode=TwoWay}" Left="{Binding Left,Mode=TwoWay}"
-        Height="50" Width="{Binding Width}">
+        Height="100" Width="{Binding Width,Mode=OneWay}">
     <Grid>
-        <Grid x:Name="grid" VerticalAlignment="Center" HorizontalAlignment="Center" Background="Transparent" MouseLeftButtonDown="Grid_MouseLeftButtonDown"
+        <Grid x:Name="grid" VerticalAlignment="Bottom" HorizontalAlignment="Center" Background="Transparent" MouseLeftButtonDown="Grid_MouseLeftButtonDown"
               MouseEnter="Grid_MouseEnter" MouseLeave="Grid_MouseLeave">
             <Grid.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="设置" Click="Setting_Click"/>
+                    <MenuItem Header="关闭" Click="Close_Click"/>
                 </ContextMenu>
             </Grid.ContextMenu>
             <TextBlock x:Name="t1" FontSize="{Binding Size}" Margin="5">
                 <TextBlock.Effect>
-                    <BlurEffect Radius="{Binding BlurRadius}"/>
+                    <BlurEffect Radius="8"/>
                 </TextBlock.Effect>
             </TextBlock>
             <TextBlock x:Name="t2" FontSize="{Binding Size}" Foreground="{Binding Color}" Margin="5"/>

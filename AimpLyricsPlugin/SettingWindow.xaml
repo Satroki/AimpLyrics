@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:AimpLyricsPlugin"
         xmlns:ex="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="设置" Height="327.178" Width="510" ResizeMode="NoResize">
+        Title="设置" Height="323.178" Width="510" ResizeMode="NoResize">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -14,12 +14,18 @@
         </Grid.ColumnDefinitions>
         <GroupBox Header="基本设置">
             <StackPanel>
-                <TextBlock Text="{Binding ElementName=sSzie,Path=Value,StringFormat='字体大小：{0}'}" Margin="2"/>
-                <Slider x:Name="sSzie" Minimum="10" Maximum="50" ValueChanged="FontSzie_ValueChanged" Margin="2"/>
+                <StackPanel Orientation="Horizontal" Margin="2">
+                    <TextBlock Text="窗口最大宽度：" Height="17" VerticalAlignment="Center"/>
+                    <TextBox x:Name="tWidth" Text="1000" Width="100" Height="20" VerticalContentAlignment="Center"/>
+                </StackPanel>
+                <TextBlock Text="{Binding ElementName=sSize,Path=Value,StringFormat='字体大小：{0:0.0}'}" Margin="2"/>
+                <Slider x:Name="sSize" Minimum="10" Maximum="50" Margin="2"/>
+                <TextBlock Text="{Binding ElementName=sRadius,Path=Value,StringFormat='模糊效果半径：{0:0.0}'}" Margin="2"/>
+                <Slider x:Name="sRadius" Minimum="0" Maximum="20" Margin="2"/>
             </StackPanel>
         </GroupBox>
         <GroupBox Header="歌词颜色" Grid.Column="1">
-            <ex:ColorCanvas x:Name="cc" SelectedColorChanged="SelectedColorChanged"/>
+            <ex:ColorCanvas x:Name="cc"/>
         </GroupBox>
     </Grid>
 </Window>

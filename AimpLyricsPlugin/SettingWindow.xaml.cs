@@ -1,16 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace AimpLyricsPlugin
 {
@@ -23,13 +13,27 @@ namespace AimpLyricsPlugin
 
         public SettingWindow(Settings setting)
         {
-            InitializeComponent();
-            this.setting = setting;
+            try
+            {
+                this.setting = setting;
 
-            cc.SelectedColor = setting.Color.Color;
-            sSzie.Value = setting.Size;
+                InitializeComponent();
 
-            Closed += SettingWindow_Closed;
+                cc.SelectedColor = setting.Color.Color;
+                sSize.Value = setting.Size;
+                sRadius.Value = setting.BlurRadius;
+                tWidth.Text = setting.Width.ToString();
+
+                Closed += SettingWindow_Closed;
+                sSize.ValueChanged += FontSize_ValueChanged;
+                sRadius.ValueChanged += Radius_ValueChanged;
+                tWidth.TextChanged += Width_TextChanged;
+                cc.SelectedColorChanged += SelectedColorChanged;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void SettingWindow_Closed(object sender, EventArgs e)
@@ -43,10 +47,25 @@ namespace AimpLyricsPlugin
             setting.OnPropertyChanged(nameof(setting.Color));
         }
 
-        private void FontSzie_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void FontSize_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             setting.Size = e.NewValue;
             setting.OnPropertyChanged(nameof(setting.Size));
+        }
+
+        private void Radius_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            setting.BlurRadius = e.NewValue;
+            setting.OnPropertyChanged(nameof(setting.BlurRadius));
+        }
+
+        private void Width_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            if (double.TryParse(tWidth.Text, out double w) && w > 0)
+            {
+                setting.Width = w;
+                setting.OnPropertyChanged(nameof(setting.Width));
+            }
         }
     }
 }
