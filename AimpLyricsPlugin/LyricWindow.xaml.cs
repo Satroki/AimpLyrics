@@ -69,14 +69,16 @@ namespace AimpLyricsPlugin
                 var lrcPath = Path.Combine(dir, lrc);
                 if (File.Exists(lrcPath))
                 {
-                    var str = File.ReadAllText(lrcPath);
-                    lyric = new LyricInfo(str);
+                    try
+                    {
+                        var str = File.ReadAllText(lrcPath);
+                        lyric = new LyricInfo(str);
+                        return;
+                    }
+                    catch { }
                 }
-                else
-                {
-                    lyric = null;
-                    ChangedText("");
-                }
+                lyric = null;
+                ChangedText("");
             }
         }
 
