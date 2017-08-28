@@ -51,13 +51,26 @@ namespace AimpLyricsPlugin
         {
             if (string.IsNullOrWhiteSpace(lrcString))
                 return null;
-            var lines = lrcString.Split('\n');
+            try
+            {
+                return ParseLine(lrcString);
+            }
+            catch
+            {
+                lrcString = LrcFormat(lrcString);
+                return ParseLine(lrcString);
+            }
+        }
+
+        private LrcLine[] ParseLine(string str)
+        {
+            var lines = str.Split('\n');
             var list = new List<LrcLine>();
             foreach (var item in lines)
             {
                 list.Add(new LrcLine()
                 {
-                    Content = item.Substring(10),
+                    Content = item.Substring(10).Trim(),
                     TimePoint = TimeSpan.Parse("00:" + item.Substring(1, 8)).TotalSeconds,
                 });
             }
