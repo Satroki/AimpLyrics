@@ -42,27 +42,35 @@ namespace AimpLyricsPlugin
 
         private void Player_TrackChanged(object sender, EventArgs e)
         {
-            var fi = player.CurrentFileInfo;
-            var file = fi?.FileName;
-            if (file == null)
+            try
             {
+                var fi = player.CurrentFileInfo;
+                var file = fi?.FileName;
+                if (file == null)
+                {
+                    lyric = null;
+                    return;
+                }
+                var str = "";
+                var innerLrc = string.IsNullOrWhiteSpace(fi.Lyrics) ? null : fi.Lyrics;
+                if (setting.Inner)
+                {
+                    str = innerLrc ?? GetLrcString(file);
+                }
+                else
+                {
+                    str = GetLrcString(file) ?? innerLrc;
+                }
+                if (!string.IsNullOrEmpty(str))
+                {
+                    lyric = new LyricInfo(str);
+                    if (lyric.LrcLines != null)
+                        return;
+                }
                 lyric = null;
-                return;
+                ChangedText("");
             }
-            var str = "";
-            if (setting.Inner)
-            {
-                str = fi.Lyrics ?? GetLrcString(file);
-            }
-            else
-            {
-                str = GetLrcString(file) ?? fi.Lyrics;
-            }
-            if (!string.IsNullOrEmpty(str))
-            {
-                lyric = new LyricInfo(str);
-            }
-            else
+            catch
             {
                 lyric = null;
                 ChangedText("");

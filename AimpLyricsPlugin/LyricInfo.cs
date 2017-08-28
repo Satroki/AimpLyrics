@@ -9,75 +9,52 @@ namespace AimpLyricsPlugin
     {
         public LyricInfo(string lrcString)
         {
-            LrcLines = InitLines(lrcString);
+            LrcLines = LrcFormat(lrcString);
         }
 
-        public static string LrcFormat(string oriLrc)
+        public static LrcLine[] LrcFormat(string oriLrc)
         {
-            if (string.IsNullOrWhiteSpace(oriLrc))
-                return string.Empty;
-            var lines = oriLrc.Split('\n').Where(line => line.StartsWith("["));
-            var offset = new TimeSpan();
-            var os = lines.FirstOrDefault(o => Regex.IsMatch(o, @"\[offset:[-\+]?\d+\]"));
-            if (os != null)
-                offset = TimeSpan.FromMilliseconds(int.Parse(Regex.Match(os, @"-?\d+").Value));
-            var list = new List<LrcLine>();
-            foreach (var item in lines)
+            try
             {
-                var matches = Regex.Matches(item, @"\[(\d{1,2}):(\d{1,2})([\.:](\d{1,3}))?\]").Cast<Match>();
-                if (matches.Count() == 0)
-                    continue;
-                var content = item.Substring(matches.Sum(m => m.Value.Length)).Trim();
-                foreach (Match m in matches)
+                if (string.IsNullOrWhiteSpace(oriLrc))
+                    return null;
+                var lines = oriLrc.Split('\n').Where(line => line.StartsWith("["));
+                var offset = new TimeSpan();
+                var os = lines.FirstOrDefault(o => Regex.IsMatch(o, @"\[offset:[-\+]?\d+\]"));
+                if (os != null)
+                    offset = TimeSpan.FromMilliseconds(int.Parse(Regex.Match(os, @"-?\d+").Value));
+                var list = new List<LrcLine>();
+                foreach (var item in lines)
                 {
-                    var s = $"0:{m.Groups[1].Value}:{m.Groups[2].Value}";
-                    if (m.Groups[4].Success)
-                        s = $"{s}.{m.Groups[4].Value}";
-                    list.Add(new LrcLine()
+                    var matches = Regex.Matches(item, @"\[(\d{1,2}):(\d{1,2})([\.:](\d{1,3}))?\]").Cast<Match>();
+                    if (matches.Count() == 0)
+                        continue;
+                    var content = item.Substring(matches.Sum(m => m.Value.Length)).Trim();
+                    foreach (Match m in matches)
                     {
-                        Content = content,
-                        TimePoint = TimeSpan.Parse(s).Add(offset).TotalSeconds,
-                    });
+                        var s = $"0:{m.Groups[1].Value}:{m.Groups[2].Value}";
+                        if (m.Groups[4].Success)
+                            s = $"{s}.{m.Groups[4].Value}";
+                        list.Add(new LrcLine()
+                        {
+                            Content = content,
+                            TimePoint = TimeSpan.Parse(s).Add(offset).TotalSeconds,
+                        });
+                    }
                 }
+                return list.OrderBy(lrc => lrc.TimePoint).ToArray();
             }
-            return string.Join("\n", list.OrderBy(lrc => lrc.TimePoint));
+            catch
+            {
+                return null;
+            }
         }
 
         public LrcLine[] LrcLines { get; set; }
 
         public string Lyric => string.Join("\n", LrcLines.AsEnumerable());
 
-        private LrcLine[] InitLines(string lrcString)
-        {
-            if (string.IsNullOrWhiteSpace(lrcString))
-                return null;
-            try
-            {
-                return ParseLine(lrcString);
-            }
-            catch
-            {
-                lrcString = LrcFormat(lrcString);
-                return ParseLine(lrcString);
-            }
-        }
-
-        private LrcLine[] ParseLine(string str)
-        {
-            var lines = str.Split('\n');
-            var list = new List<LrcLine>();
-            foreach (var item in lines)
-            {
-                list.Add(new LrcLine()
-                {
-                    Content = item.Substring(10).Trim(),
-                    TimePoint = TimeSpan.Parse("00:" + item.Substring(1, 8)).TotalSeconds,
-                });
-            }
-            return list.ToArray();
-        }
-
-        public string Seek(double sec) => LrcLines.LastOrDefault(ll => ll.TimePoint < sec)?.Content;
+        public string Seek(double sec) => LrcLines?.LastOrDefault(ll => ll.TimePoint < sec)?.Content;
     }
 
     public class LrcLine
