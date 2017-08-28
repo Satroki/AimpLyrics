@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="歌词" WindowStyle="None" Background="Transparent" AllowsTransparency="True" Topmost="True"
+        Title="歌词" WindowStyle="None" Background="Transparent" AllowsTransparency="True" Topmost="{Binding Topmost,Mode=OneWay}"
         Top="{Binding Top,Mode=TwoWay}" Left="{Binding Left,Mode=TwoWay}"
         Height="100" Width="{Binding Width,Mode=OneWay}">
     <Grid>

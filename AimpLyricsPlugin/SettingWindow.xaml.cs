@@ -23,12 +23,17 @@ namespace AimpLyricsPlugin
                 sSize.Value = setting.Size;
                 sRadius.Value = setting.BlurRadius;
                 tWidth.Text = setting.Width.ToString();
+                cInner.IsChecked = setting.Inner;
+                cTopmost.IsChecked = setting.Topmost;
 
                 Closed += SettingWindow_Closed;
                 sSize.ValueChanged += FontSize_ValueChanged;
                 sRadius.ValueChanged += Radius_ValueChanged;
                 tWidth.TextChanged += Width_TextChanged;
                 cc.SelectedColorChanged += SelectedColorChanged;
+
+                cTopmost.Checked += CTopmost_Checked;
+                cTopmost.Unchecked += CTopmost_Checked;
             }
             catch (Exception ex)
             {
@@ -36,8 +41,15 @@ namespace AimpLyricsPlugin
             }
         }
 
+        private void CTopmost_Checked(object sender, RoutedEventArgs e)
+        {
+            setting.Topmost = cTopmost.IsChecked ?? false;
+            setting.OnPropertyChanged(nameof(setting.Topmost));
+        }
+
         private void SettingWindow_Closed(object sender, EventArgs e)
         {
+            setting.Inner = cInner.IsChecked ?? false;
             setting.Save();
         }
 

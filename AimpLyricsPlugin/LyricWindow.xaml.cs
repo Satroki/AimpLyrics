@@ -19,7 +19,6 @@ namespace AimpLyricsPlugin
         private IAimpPlayer player;
 
         private DispatcherTimer timer = new DispatcherTimer();
-        private string file;
         private LyricInfo lyric;
         private Settings setting;
 
@@ -28,6 +27,7 @@ namespace AimpLyricsPlugin
             Owner = null;
             InitializeComponent();
             this.player = player;
+            this.player.TrackChanged += Player_TrackChanged;
 
             Closing += LyricWindow_Closing;
 
@@ -38,6 +38,47 @@ namespace AimpLyricsPlugin
             timer.Interval = TimeSpan.FromMilliseconds(50);
             timer.Tick += Timer_Tick;
             timer.Start();
+        }
+
+        private void Player_TrackChanged(object sender, EventArgs e)
+        {
+            var fi = player.CurrentFileInfo;
+            var file = fi?.FileName;
+            if (file == null)
+            {
+                lyric = null;
+                return;
+            }
+            var str = "";
+            if (setting.Inner)
+            {
+                str = fi.Lyrics ?? GetLrcString(file);
+            }
+            else
+            {
+                str = GetLrcString(file) ?? fi.Lyrics;
+            }
+            if (!string.IsNullOrEmpty(str))
+            {
+                lyric = new LyricInfo(str);
+            }
+            else
+            {
+                lyric = null;
+                ChangedText("");
+            }
+        }
+
+        private string GetLrcString(string file)
+        {
+            var dir = Path.GetDirectoryName(file);
+            var lrc = Path.GetFileNameWithoutExtension(file) + ".lrc";
+            var lrcPath = Path.Combine(dir, lrc);
+            if (File.Exists(lrcPath))
+            {
+                return File.ReadAllText(lrcPath);
+            }
+            return null;
         }
 
         private void Setting_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -51,33 +92,9 @@ namespace AimpLyricsPlugin
 
         private void Timer_Tick(object sender, EventArgs e)
         {
-            var fi = player.CurrentFileInfo;
-            var current = fi?.FileName;
-            if (string.IsNullOrEmpty(current))
+            if (lyric == null)
                 return;
-            if (file == current)
-            {
-                if (lyric == null)
-                    return;
-                ChangedText(lyric.Seek(player.Position));
-            }
-            else
-            {
-                file = current;
-                var dir = Path.GetDirectoryName(file);
-                var lrc = Path.GetFileNameWithoutExtension(file) + ".lrc";
-                var lrcPath = Path.Combine(dir, lrc);
-                if (File.Exists(lrcPath))
-                {
-                    var str = File.ReadAllText(lrcPath);
-                    lyric = new LyricInfo(str);
-                }
-                else
-                {
-                    lyric = null;
-                    ChangedText("");
-                }
-            }
+            ChangedText(lyric.Seek(player.Position));
         }
 
         private void ChangedText(string text)

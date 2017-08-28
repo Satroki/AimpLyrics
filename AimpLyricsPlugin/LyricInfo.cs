@@ -21,21 +21,22 @@ namespace AimpLyricsPlugin
             var os = lines.FirstOrDefault(o => Regex.IsMatch(o, @"\[offset:[-\+]?\d+\]"));
             if (os != null)
                 offset = TimeSpan.FromMilliseconds(int.Parse(Regex.Match(os, @"-?\d+").Value));
-
             var list = new List<LrcLine>();
             foreach (var item in lines)
             {
-                var matches = Regex.Matches(item, @"\[\d{2}:\d{2}[\.:]\d{2,3}\]").Cast<Match>();
+                var matches = Regex.Matches(item, @"\[(\d{1,2}):(\d{1,2})([\.:](\d{1,3}))?\]").Cast<Match>();
                 if (matches.Count() == 0)
                     continue;
                 var content = item.Substring(matches.Sum(m => m.Value.Length)).Trim();
                 foreach (Match m in matches)
                 {
-                    var s = m.Value.Substring(1, 5) + m.Value.Substring(6, 3).Replace(':', '.');
+                    var s = $"0:{m.Groups[1].Value}:{m.Groups[2].Value}";
+                    if (m.Groups[4].Success)
+                        s = $"{s}.{m.Groups[4].Value}";
                     list.Add(new LrcLine()
                     {
                         Content = content,
-                        TimePoint = TimeSpan.Parse("00:" + s).Add(offset).TotalSeconds,
+                        TimePoint = TimeSpan.Parse(s).Add(offset).TotalSeconds,
                     });
                 }
             }

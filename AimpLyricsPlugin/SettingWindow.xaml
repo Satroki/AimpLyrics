@@ -22,6 +22,8 @@
                 <Slider x:Name="sSize" Minimum="10" Maximum="50" Margin="2"/>
                 <TextBlock Text="{Binding ElementName=sRadius,Path=Value,StringFormat='模糊效果半径：{0:0.0}'}" Margin="2"/>
                 <Slider x:Name="sRadius" Minimum="0" Maximum="20" Margin="2"/>
+                <CheckBox x:Name="cInner" Content="内置歌词优先" Margin="0,5"/>
+                <CheckBox x:Name="cTopmost" Content="窗口置于顶层"/>
             </StackPanel>
         </GroupBox>
         <GroupBox Header="歌词颜色" Grid.Column="1">
