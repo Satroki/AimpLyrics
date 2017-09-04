@@ -13,6 +13,7 @@
             <Grid.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="设置" Click="Setting_Click"/>
+                    <MenuItem Header="查看" Click="Edit_Click"/>
                     <MenuItem Header="关闭" Click="Close_Click"/>
                 </ContextMenu>
             </Grid.ContextMenu>

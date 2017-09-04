@@ -28,6 +28,7 @@ namespace AimpLyricsPlugin
             InitializeComponent();
             this.player = player;
             this.player.TrackChanged += Player_TrackChanged;
+            this.player.StateChanged += Player_StateChanged;
 
             Closing += LyricWindow_Closing;
 
@@ -38,6 +39,23 @@ namespace AimpLyricsPlugin
             timer.Interval = TimeSpan.FromMilliseconds(50);
             timer.Tick += Timer_Tick;
             timer.Start();
+        }
+
+        private void Player_StateChanged(object sender, StateChangedEventArgs e)
+        {
+            switch (e.PlayerState)
+            {
+                case AIMP.SDK.AimpPlayerState.Playing:
+                    timer.Start();
+                    break;
+                case AIMP.SDK.AimpPlayerState.Stopped:
+                    timer.Stop();
+                    ChangedText(string.Empty);
+                    break;
+                case AIMP.SDK.AimpPlayerState.Pause:
+                    timer.Stop();
+                    break;
+            }
         }
 
         private void Player_TrackChanged(object sender, EventArgs e)
@@ -154,6 +172,12 @@ namespace AimpLyricsPlugin
         private void Close_Click(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        private void Edit_Click(object sender, RoutedEventArgs e)
+        {
+            var win = new EditWindow(lyric);
+            win.Show();
         }
     }
 }

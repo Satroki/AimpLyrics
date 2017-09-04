@@ -61,6 +61,6 @@ namespace AimpLyricsPlugin
     {
         public double TimePoint { get; set; }
         public string Content { get; set; }
-        public override string ToString() => TimePoint.ToString(@"\[mm\:ss\.ff\]") + Content;
+        public override string ToString() => $"[{TimePoint / 60:00}:{TimePoint % 60:00.00}]{Content}";
     }
 }
