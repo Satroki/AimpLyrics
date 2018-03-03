@@ -1,9 +1,10 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace AimpLyricsPlugin
+namespace AimpLyricsWindow
 {
     public class LyricInfo
     {
@@ -55,6 +56,9 @@ namespace AimpLyricsPlugin
         public string Lyric => string.Join("\n", LrcLines.AsEnumerable());
 
         public string Seek(double sec) => LrcLines?.LastOrDefault(ll => ll.TimePoint < sec)?.Content;
+
+        public static implicit operator JToken(LyricInfo li) => JToken.FromObject(li);
+        public static implicit operator LyricInfo(JToken jt) => jt.ToObject<LyricInfo>();
     }
 
     public class LrcLine

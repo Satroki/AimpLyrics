@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26127.3
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AimpLyricsPlugin", "AimpLyricsPlugin\AimpLyricsPlugin.csproj", "{B15B6A37-D598-4D4D-AE79-9DDD2051FC15}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AimpLyricsWindow", "AimpLyricsWindow\AimpLyricsWindow.csproj", "{3B5CC840-4F7F-4C1A-9ED0-BA15C59A7F1D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NamedPipeWrapper", "NamedPipeWrapper\NamedPipeWrapper.csproj", "{73152691-3CDE-46DF-8D04-7117747DFFE7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,8 +19,19 @@ Global
 		{B15B6A37-D598-4D4D-AE79-9DDD2051FC15}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B15B6A37-D598-4D4D-AE79-9DDD2051FC15}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B15B6A37-D598-4D4D-AE79-9DDD2051FC15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B5CC840-4F7F-4C1A-9ED0-BA15C59A7F1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B5CC840-4F7F-4C1A-9ED0-BA15C59A7F1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B5CC840-4F7F-4C1A-9ED0-BA15C59A7F1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B5CC840-4F7F-4C1A-9ED0-BA15C59A7F1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73152691-3CDE-46DF-8D04-7117747DFFE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73152691-3CDE-46DF-8D04-7117747DFFE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73152691-3CDE-46DF-8D04-7117747DFFE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73152691-3CDE-46DF-8D04-7117747DFFE7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {94827339-814A-4436-A5D1-9CB530C5AC8E}
 	EndGlobalSection
 EndGlobal

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -6,29 +7,22 @@ using System.Reflection;
 using System.Text;
 using System.Windows;
 using System.Windows.Media;
-namespace AimpLyricsPlugin
+namespace AimpLyricsWindow
 {
     public class Settings : INotifyPropertyChanged
     {
-        [Setting]
         public double Top { get; set; } = 100;
-        [Setting]
         public double Left { get; set; } = 100;
-        [Setting]
         public double Width { get; set; } = 1000;
-        [Setting]
         public string ColorString { get; set; } = "#FFE2FFB7";
-        [Setting]
         public double Size { get; set; } = 30;
-        [Setting]
         public double BlurRadius { get; set; } = 8;
-        [Setting]
         public bool Inner { get; set; } = true;
-        [Setting]
         public bool Topmost { get; set; } = true;
-
+        [JsonIgnore]
         public SolidColorBrush Color => ConvertColor(ColorString);
-        private const string FileName = "config.cfg";
+        [JsonIgnore]
+        private const string FileName = "config.json";
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
@@ -47,18 +41,8 @@ namespace AimpLyricsPlugin
             {
                 try
                 {
-                    var cfg = File.ReadAllLines(path).Where(l => l != null && l.Contains("="));
-                    var setting = new Settings();
-                    var t = typeof(Settings);
-                    foreach (var line in cfg)
-                    {
-                        var kv = line.Split('=');
-                        var k = kv[0].Trim();
-                        var v = kv[1].Trim();
-                        var p = t.GetProperty(k);
-                        if (p != null)
-                            p.SetValue(setting, Convert.ChangeType(v, p.PropertyType));
-                    }
+                    var cfg = File.ReadAllText(path);
+                    var setting = JsonConvert.DeserializeObject<Settings>(cfg);
                     return setting;
                 }
                 catch (Exception ex)
@@ -72,20 +56,10 @@ namespace AimpLyricsPlugin
         public void Save()
         {
             var path = GetPath();
-            var sb = new StringBuilder();
-            var props = typeof(Settings).GetProperties().Where(p => p.GetCustomAttribute<SettingAttribute>() != null);
-            foreach (var p in props)
-            {
-                sb.AppendLine($"{p.Name}={p.GetValue(this)}");
-            }
-            File.WriteAllText(path, sb.ToString());
+            var s = JsonConvert.SerializeObject(this);
+            File.WriteAllText(path, s);
         }
 
         public static SolidColorBrush ConvertColor(string str) => new SolidColorBrush((Color)ColorConverter.ConvertFromString(str));
-    }
-
-    public class SettingAttribute : Attribute
-    {
-
     }
 }

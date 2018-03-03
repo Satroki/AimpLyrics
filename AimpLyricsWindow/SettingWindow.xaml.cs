@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Media;
 
-namespace AimpLyricsPlugin
+namespace AimpLyricsWindow
 {
     /// <summary>
     /// SettingWindow.xaml 的交互逻辑
