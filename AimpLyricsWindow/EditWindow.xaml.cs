@@ -20,6 +20,7 @@ namespace AimpLyricsWindow
     {
         private LyricInfo lyricInfo;
         private FileSystemWatcher fsw = new FileSystemWatcher();
+        //private FileSystemWatcher fsw2 = new FileSystemWatcher();
         private string cacheDir;
 
         public EditWindow(LyricInfo lyric)
@@ -33,6 +34,11 @@ namespace AimpLyricsWindow
                 fsw.Path = AppSettings.LrcTempPath;
                 fsw.Created += Fsw_Created;
             }
+            //if (Directory.Exists(AppSettings.LrcPath))
+            //{
+            //    fsw2.Path = AppSettings.LrcPath;
+            //    fsw2.Created += Fsw_Created;
+            //}
 
             checkBox.Checked += CheckedChanged;
             checkBox.Unchecked += CheckedChanged;
@@ -65,7 +71,7 @@ namespace AimpLyricsWindow
         private void SaveToCache(string lrc)
         {
             var file = $"{lyricInfo.Album} - {lyricInfo.Title}.lrc";
-            string.Join("_", file.Split(Path.GetInvalidFileNameChars()));
+            file = string.Join("_", file.Split(Path.GetInvalidFileNameChars()));
             File.WriteAllText(Path.Combine(cacheDir, file), lrc);
         }
 
@@ -149,11 +155,14 @@ namespace AimpLyricsWindow
         {
             fsw.EnableRaisingEvents = false;
             fsw.Dispose();
+            //fsw2.EnableRaisingEvents = false;
+            //fsw2.Dispose();
             LrcEditWindow = null;
         }
 
         private void CheckedChanged(object sender, RoutedEventArgs e)
         {
+            //fsw2.EnableRaisingEvents = 
             fsw.EnableRaisingEvents = checkBox.IsChecked ?? false;
         }
 

@@ -20,6 +20,7 @@ namespace AimpLyricsWindow
         public bool Inner { get; set; } = true;
         public bool Topmost { get; set; } = true;
         public string LrcTempPath { get; set; }
+        //public string LrcPath { get; set; }
 
         [JsonIgnore]
         public SolidColorBrush Color => ConvertColor(ColorString);
@@ -33,6 +34,7 @@ namespace AimpLyricsWindow
         {
             var appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             LrcTempPath = Path.Combine(appData, @"Netease\CloudMusic\Temp");
+            //LrcPath = Path.Combine(appData, @"Netease\CloudMusic\webdata\lyric");
         }
 
         private static string GetPath()
