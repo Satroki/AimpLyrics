@@ -4,11 +4,44 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AimpLyricsWindow"
+        xmlns:System="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
-        Title="歌词" Height="500" Width="400">
+        Title="歌词" Height="455.625" Width="516.873"
+        WindowStartupLocation="CenterScreen" AllowDrop="True" Closing="Window_Closing">
     <Grid>
-        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-            <TextBox AcceptsReturn="True" Text="{Binding Lyric,Mode=OneWay}" IsReadOnly="True" FontSize="16"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top"
+                    Margin="0,10,0,0">
+            <CheckBox x:Name="checkBox" Content="监视" HorizontalAlignment="Left" Margin="5,0,0,0" VerticalAlignment="Center" IsChecked="True" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+            <Button Content="Temp" Margin="10,0,0,0"  Width="45" Click="OpenTemp_Click"/>
+            <Button Content="Temp转换" Margin="5,0,0,0"  Width="65" Click="TempConvert_Click"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top"
+                    Margin="0,10,0,0">
+            <Button x:Name="button" Content="格式化" HorizontalAlignment="Right" Margin="0,0,10,0" VerticalAlignment="Top" Width="60" Click="Import_Click"/>
+            <TextBox x:Name="tbOffset" HorizontalAlignment="Right" Margin="0,0,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="60" Height="19" VerticalContentAlignment="Center"/>
+            <Button Content="Offset" HorizontalAlignment="Right" Margin="0,0,5,0" VerticalAlignment="Top" Width="60" Click="Offset_Click" Height="19"/>
+            <Button Content="应用" HorizontalAlignment="Right" Margin="0,0,5,0" VerticalAlignment="Top" Width="40" Click="Apply_Click"/>
+            <Button Content="保存" HorizontalAlignment="Right" Margin="0,0,5,0" VerticalAlignment="Top" Width="40" Click="Save_Click"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top"
+                    Margin="5,34,0,0">
+            <Button Click="OpenLrc_Clcik" Content="查找lrc文件" Margin="0" Width="75"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top"
+                    Margin="0,34,5,0">
+            <ComboBox x:Name="comboBox" HorizontalAlignment="Right" Margin="0,0,0,0" VerticalAlignment="Top" Width="80"
+                  SelectedItem="{Binding Text,ElementName=tbPatt,Mode=OneWayToSource}">
+                <System:String>【.*】</System:String>
+                <System:String>（.*?）</System:String>
+                <System:String>\(.*?\)</System:String>
+                <System:String>〖.*〗</System:String>
+            </ComboBox>
+            <TextBox x:Name="TbPatt" Margin="0,0,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Center" Width="215" Height="19" VerticalContentAlignment="Center"/>
+            <Button x:Name="button1" Content="正则删除" Margin="0,0,0,0" VerticalAlignment="Center" Width="60" Click="RegexDel_Click"/>
+        </StackPanel>
+        <ScrollViewer Margin="5,58,5,5">
+            <TextBox x:Name="TbLrc" TextWrapping="Wrap" AcceptsReturn="True" Text="" AllowDrop="True" PreviewDrop="TbLrc_Drop" PreviewDragOver="TbLrc_DragOver"/>
         </ScrollViewer>
+
     </Grid>
 </Window>

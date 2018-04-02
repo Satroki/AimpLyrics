@@ -1,6 +1,9 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -8,17 +11,36 @@ namespace AimpLyricsWindow
 {
     public class LyricInfo
     {
-        public LyricInfo(string lrcString)
+        public string Title { get; set; }
+        public string FilePath { get; set; } = string.Empty;
+        public string Album { get; set; } = string.Empty;
+
+        [JsonIgnore]
+        public string LrcPath => FilePath.Substring(0, FilePath.LastIndexOf('.')) + ".lrc";
+
+        public LyricInfo()
         {
-            LrcLines = LrcFormat(lrcString);
+
         }
 
-        public static LrcLine[] LrcFormat(string oriLrc)
+        public LyricInfo(string lrcString)
+        {
+            LrcFormat(lrcString);
+        }
+
+        public LyricInfo(string title, string filePath, string album = null)
+        {
+            Title = title;
+            FilePath = filePath;
+            Album = album;
+        }
+
+        public void LrcFormat(string oriLrc)
         {
             try
             {
                 if (string.IsNullOrWhiteSpace(oriLrc))
-                    return null;
+                    return;
                 var lines = oriLrc.Split('\n').Where(line => line.StartsWith("["));
                 var offset = new TimeSpan();
                 var os = lines.FirstOrDefault(o => Regex.IsMatch(o, @"\[offset:[-\+]?\d+\]"));
@@ -38,22 +60,23 @@ namespace AimpLyricsWindow
                             s = $"{s}.{m.Groups[4].Value}";
                         list.Add(new LrcLine()
                         {
-                            Content = content,
+                            Content = content ?? string.Empty,
                             TimePoint = TimeSpan.Parse(s).Add(offset).TotalSeconds,
                         });
                     }
                 }
-                return list.OrderBy(lrc => lrc.TimePoint).ToArray();
+                LrcLines = list.OrderBy(lrc => lrc.TimePoint).ToArray();
             }
             catch
             {
-                return null;
+                LrcLines = null;
             }
         }
 
         public LrcLine[] LrcLines { get; set; }
 
-        public string Lyric => string.Join("\n", LrcLines.AsEnumerable());
+        [JsonIgnore]
+        public string Lyric => LrcLines == null ? null : string.Join("\n", LrcLines.AsEnumerable());
 
         public string Seek(double sec) => LrcLines?.LastOrDefault(ll => ll.TimePoint < sec)?.Content;
 
@@ -63,8 +86,15 @@ namespace AimpLyricsWindow
 
     public class LrcLine
     {
-        public double TimePoint { get; set; }
+        private double _TimePoint;
+
+        public double TimePoint
+        {
+            get { return _TimePoint; }
+            set { _TimePoint = value < 0 ? 0 : value; }
+        }
+
         public string Content { get; set; }
-        public override string ToString() => $"[{TimePoint / 60:00}:{TimePoint % 60:00.00}]{Content}";
+        public override string ToString() => TimeSpan.FromSeconds(TimePoint).ToString(@"\[mm\:ss\.ff\]") + Content;
     }
 }

@@ -1,12 +1,8 @@
 ﻿using AIMP.SDK.Player;
 using AimpLyricsPlugin;
 using NamedPipeWrapper;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
-using System.IO.Pipes;
-using System.Security.Principal;
 using System.Windows.Threading;
 
 namespace AimpLyricsWindow
@@ -19,6 +15,7 @@ namespace AimpLyricsWindow
         private LyricInfo lyric;
         private Settings setting;
         private NamedPipeClient<Message> client;
+        private string lastLine;
 
         public PlayerProxy(IAimpPlayer player)
         {
@@ -40,6 +37,18 @@ namespace AimpLyricsWindow
 
         private void Client_ServerMessage(NamedPipeConnection<Message, Message> connection, Message message)
         {
+            switch (message.Action)
+            {
+                case MessageAction.LineChange:
+                    break;
+                case MessageAction.PlayerClose:
+                    break;
+                case MessageAction.LyricInfo:
+                    lyric = message.Data;
+                    break;
+                default:
+                    break;
+            }
         }
 
         private void Player_StateChanged(object sender, StateChangedEventArgs e)
@@ -57,6 +66,11 @@ namespace AimpLyricsWindow
                     timer.Stop();
                     break;
             }
+        }
+
+        internal void ShowEdit()
+        {
+            client.PushMessage(new Message { Action = MessageAction.ShowEdit });
         }
 
         private void Player_TrackChanged(object sender, EventArgs e)
@@ -81,20 +95,14 @@ namespace AimpLyricsWindow
                 {
                     str = GetLrcString(file) ?? innerLrc;
                 }
+                lyric = new LyricInfo(fi.Title, file, fi.Album);
                 if (!string.IsNullOrEmpty(str))
-                {
-                    lyric = new LyricInfo(str);
-                    if (lyric.LrcLines != null)
-                    {
-                        client.PushMessage(new Message { Action = MessageAction.LyricInfo, Data = lyric });
-                        return;
-                    }
-                }
-                lyric = null;
-                ChangedText("");
+                    lyric.LrcFormat(str);
+                client.PushMessage(new Message { Action = MessageAction.LyricInfo, Data = lyric });
             }
-            catch
+            catch (Exception ex)
             {
+                client.PushMessage(new Message { Action = MessageAction.Error, Data = ex.ToString() });
                 lyric = null;
                 ChangedText("");
             }
@@ -121,7 +129,11 @@ namespace AimpLyricsWindow
 
         private void ChangedText(string text)
         {
-            client.PushMessage(new Message { Action = MessageAction.LineChange, Data = text });
+            if (lastLine != text)
+            {
+                lastLine = text;
+                client.PushMessage(new Message { Action = MessageAction.LineChange, Data = text });
+            }
         }
 
         private void LyricWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)

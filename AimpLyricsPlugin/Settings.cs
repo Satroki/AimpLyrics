@@ -19,6 +19,8 @@ namespace AimpLyricsWindow
         public double BlurRadius { get; set; } = 8;
         public bool Inner { get; set; } = true;
         public bool Topmost { get; set; } = true;
+        public string LrcTempPath { get; set; }
+
         [JsonIgnore]
         public SolidColorBrush Color => ConvertColor(ColorString);
         [JsonIgnore]
@@ -26,6 +28,12 @@ namespace AimpLyricsWindow
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
+        public Settings()
+        {
+            var appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            LrcTempPath = Path.Combine(appData, @"Netease\CloudMusic\Temp");
+        }
 
         private static string GetPath()
         {

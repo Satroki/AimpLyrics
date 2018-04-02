@@ -15,22 +15,22 @@ namespace AimpLyricsWindow
     {
         private string dir;
         private string winFile;
-        private string logFile;
         private PlayerProxy proxy;
         private Process process;
         private IAimpMenuItem menu;
+        private IAimpMenuItem menu2;
         public override void Dispose()
         {
             process.CloseMainWindow();
             process.Kill();
             Player.MenuManager.Delete(menu);
+            Player.MenuManager.Delete(menu2);
         }
 
         public override void Initialize()
         {
             dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             winFile = Path.Combine(dir, "AimpLyricsWindow.exe");
-            logFile = Path.Combine(dir, "log.log");
             if (Player.MenuManager.CreateMenuItem(out menu) == AimpActionResult.Ok)
             {
                 menu.Name = "显示歌词";
@@ -40,8 +40,22 @@ namespace AimpLyricsWindow
                 menu.OnExecute += MenuItem_OnExecute; ;
                 Player.MenuManager.Add(ParentMenuType.AIMP_MENUID_COMMON_UTILITIES, menu);
             }
+            if (Player.MenuManager.CreateMenuItem(out menu2) == AimpActionResult.Ok)
+            {
+                menu2.Name = "编辑歌词";
+                menu2.Id = "edit_lyric";
+                menu2.Style = AimpMenuItemStyle.Normal;
+
+                menu2.OnExecute += MenuItem2_OnExecute; ;
+                Player.MenuManager.Add(ParentMenuType.AIMP_MENUID_COMMON_UTILITIES, menu2);
+            }
             StartWindow();
             proxy = new PlayerProxy(Player);
+        }
+
+        private void MenuItem2_OnExecute(object sender, EventArgs e)
+        {
+            proxy?.ShowEdit();
         }
 
         private void MenuItem_OnExecute(object sender, EventArgs e)

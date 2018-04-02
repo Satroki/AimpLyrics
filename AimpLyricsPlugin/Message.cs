@@ -13,12 +13,19 @@ namespace AimpLyricsPlugin
     {
         public MessageAction Action { get; set; }
         public JToken Data { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Action} : {Data}";
+        }
     }
 
     public enum MessageAction
     {
         LineChange,
         PlayerClose,
-        LyricInfo
+        LyricInfo,
+        Error,
+        ShowEdit,
     }
 }

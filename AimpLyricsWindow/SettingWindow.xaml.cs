@@ -11,11 +11,11 @@ namespace AimpLyricsWindow
     {
         private Settings setting;
 
-        public SettingWindow(Settings setting)
+        public SettingWindow()
         {
             try
             {
-                this.setting = setting;
+                this.setting = StaticCache.AppSettings;
 
                 InitializeComponent();
 

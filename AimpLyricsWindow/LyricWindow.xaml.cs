@@ -2,6 +2,7 @@
 using NamedPipeWrapper;
 using Newtonsoft.Json;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Effects;
 using System.Windows.Threading;
+using static AimpLyricsWindow.StaticCache;
 
 namespace AimpLyricsWindow
 {
@@ -23,8 +25,6 @@ namespace AimpLyricsWindow
 
         private DispatcherTimer timer = new DispatcherTimer();
         private LyricInfo lyric;
-        private Settings setting;
-        private NamedPipeServer<Message> server;
 
         public LyricWindow()
         {
@@ -36,9 +36,9 @@ namespace AimpLyricsWindow
 
                 Closing += LyricWindow_Closing;
 
-                setting = Settings.Read();
-                DataContext = setting;
-                setting.PropertyChanged += Setting_PropertyChanged;
+                AppSettings = Settings.Read();
+                DataContext = AppSettings;
+                AppSettings.PropertyChanged += Setting_PropertyChanged;
             }
             catch (Exception e)
             {
@@ -48,7 +48,7 @@ namespace AimpLyricsWindow
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            server = new NamedPipeServer<Message>("AimpLyricsPluginPipe");
+            var server = AppPipeServer = new NamedPipeServer<Message>("AimpLyricsPluginPipe");
             server.ClientConnected += Server_ClientConnected;
             server.ClientMessage += Server_ClientMessage;
             server.Start();
@@ -56,17 +56,22 @@ namespace AimpLyricsWindow
 
         private void Server_ClientMessage(NamedPipeConnection<Message, Message> connection, Message m)
         {
+            Debug.WriteLine(m);
             switch (m.Action)
             {
                 case MessageAction.LineChange:
                     Dispatcher.Invoke(() => ChangedText((string)m.Data));
                     break;
                 case MessageAction.PlayerClose:
-                    server.Stop();
+                    AppPipeServer.Stop();
                     Close();
                     break;
                 case MessageAction.LyricInfo:
                     lyric = m.Data;
+                    LrcEditWindow?.Refresh(lyric);
+                    break;
+                case MessageAction.ShowEdit:
+                    Dispatcher.Invoke(ShowEdit);
                     break;
             }
         }
@@ -78,10 +83,10 @@ namespace AimpLyricsWindow
 
         private void Setting_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(setting.BlurRadius))
+            if (e.PropertyName == nameof(AppSettings.BlurRadius))
             {
                 if (t1.Effect is BlurEffect be)
-                    be.Radius = setting.BlurRadius;
+                    be.Radius = AppSettings.BlurRadius;
             }
         }
 
@@ -100,7 +105,7 @@ namespace AimpLyricsWindow
 
         public void Save()
         {
-            setting.Save();
+            AppSettings.Save();
         }
 
         private void Grid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -122,7 +127,7 @@ namespace AimpLyricsWindow
         {
             try
             {
-                var sw = new SettingWindow(setting);
+                var sw = new SettingWindow();
                 sw.Show();
             }
             catch (Exception ex)
@@ -138,8 +143,13 @@ namespace AimpLyricsWindow
 
         private void Edit_Click(object sender, RoutedEventArgs e)
         {
-            var win = new EditWindow(lyric);
-            win.Show();
+            ShowEdit();
+        }
+
+        private void ShowEdit()
+        {
+            LrcEditWindow = new EditWindow(lyric);
+            LrcEditWindow.Show();
         }
     }
 }

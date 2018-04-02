@@ -17,7 +17,7 @@
                     <MenuItem Header="关闭" Click="Close_Click"/>
                 </ContextMenu>
             </Grid.ContextMenu>
-            <TextBlock x:Name="t1" FontSize="{Binding Size}" Margin="5">
+            <TextBlock x:Name="t1" FontSize="{Binding Size}" Margin="5" MinWidth="100">
                 <TextBlock.Effect>
                     <BlurEffect Radius="8"/>
                 </TextBlock.Effect>
