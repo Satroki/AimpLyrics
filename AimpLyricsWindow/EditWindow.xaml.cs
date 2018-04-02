@@ -193,15 +193,21 @@ namespace AimpLyricsWindow
                 var files = new DirectoryInfo(AppSettings.LrcTempPath).GetFiles();
                 foreach (var f in files)
                 {
-                    if (f.Name.Contains(".") || f.Length > 15 * 1024)
-                        continue;
-                    var txt = File.ReadAllText(f.FullName, Encoding.UTF8);
-                    if (txt.StartsWith("{"))
+                    try
                     {
-                        var j = JObject.Parse(txt);
-                        var lrc = j["lrc"]["lyric"].Value<string>();
-                        File.WriteAllText(Path.Combine(f.DirectoryName, f.LastWriteTime.ToString("0 yyyyMMddHHmmss") + ".lrc"), lrc);
+                        if (f.Name.Contains(".") || f.Length > 15 * 1024)
+                            continue;
+                        var txt = File.ReadAllText(f.FullName, Encoding.UTF8);
+                        if (txt.StartsWith("{"))
+                        {
+                            var j = JObject.Parse(txt);
+                            var lrc = j["lrc"]?["lyric"]?.Value<string>();
+                            if (lrc == null)
+                                continue;
+                            File.WriteAllText(Path.Combine(f.DirectoryName, f.LastWriteTime.ToString("0 yyyyMMddHHmmss") + ".lrc"), lrc);
+                        }
                     }
+                    catch { }
                 }
                 MessageBox.Show("完成");
             }
